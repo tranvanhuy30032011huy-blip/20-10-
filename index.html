@@ -166,27 +166,25 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Hoa rơi */
-        .falling-item {
+        /* Hiệu ứng mưa rơi */
+        .rain-item {
             position: absolute;
             top: -10%;
             user-select: none;
             pointer-events: none;
-            animation: fall linear infinite;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+            animation: rainFall linear infinite;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
+            z-index: 1;
         }
 
-        @keyframes fall {
+        @keyframes rainFall {
             0% {
                 transform: translateY(0) rotate(0deg) scale(0.8);
                 opacity: 1;
             }
-            50% {
-                transform: translateY(50vh) rotate(180deg) scale(1.2);
-            }
             100% {
-                transform: translateY(110vh) rotate(360deg) scale(0.8);
-                opacity: 0;
+                transform: translateY(110vh) rotate(360deg) scale(1);
+                opacity: 0.2;
             }
         }
     </style>
@@ -197,7 +195,7 @@
         <div class="container">
             <div class="heart-icon">💖</div>
             <h1>Happy Women's Day 20/10 🌸</h1>
-            <p class="sub-text">Chúc các bạn/chị/em một ngày 20/10 ngập tràn niềm vui, luôn xinh đẹp, tự tin và hạnh phúc bên những người thân yêu!</p>
+            <p class="sub-text">Chúc bạn một ngày 20/10 ngập tràn niềm vui, luôn xinh đẹp, tự tin và hạnh phúc bên những người thân yêu!</p>
             
             <button class="btn" id="wishBtn" onclick="celebrate()">Mở Quà & Lời Chúc ✨</button>
 
@@ -220,11 +218,10 @@
             "Chúc bạn luôn giữ vững sự trẻ trung, quyến rũ, luôn hạnh phúc và đạt được mọi ước mơ của mình!"
         ];
 
-        let isTyping = false;
-        let typingTimeout;
+        let hasTypedOnce = false; // Biến kiểm tra chữ đã gõ 1 lần chưa
 
-        // Hàm tạo hiệu ứng gõ chữ
-        function typeWriter(text, elementId, speed = 50) {
+        // Hàm hiệu ứng gõ chữ
+        function typeWriter(text, elementId, speed = 45) {
             const element = document.getElementById(elementId);
             const cursor = document.getElementById('cursor');
             element.innerText = '"';
@@ -235,10 +232,11 @@
                 if (i < text.length) {
                     element.innerText += text.charAt(i);
                     i++;
-                    typingTimeout = setTimeout(type, speed);
+                    setTimeout(type, speed);
                 } else {
                     element.innerText += '"';
-                    isTyping = false;
+                    cursor.style.display = 'none'; // Ẩn con trỏ sau khi gõ xong
+                    hasTypedOnce = true; // Đánh dấu đã gõ xong 1 lần
                 }
             }
             type();
@@ -246,18 +244,23 @@
 
         // Hàm xử lý khi bấm nút
         function celebrate() {
-            if (isTyping) return; // Tránh bấm liên tục khi đang gõ chữ
-
             const card = document.getElementById('wishesCard');
+            const wishTextElement = document.getElementById('wishText');
+            const cursor = document.getElementById('cursor');
             card.style.display = 'block';
 
             // Chọn ngẫu nhiên lời chúc
             const randomIndex = Math.floor(Math.random() * wishes.length);
             const selectedWish = wishes[randomIndex];
 
-            isTyping = true;
-            clearTimeout(typingTimeout);
-            typeWriter(selectedWish, 'wishText', 45);
+            if (!hasTypedOnce) {
+                // Lần đầu tiên bấm nút -> Chạy hiệu ứng gõ chữ
+                typeWriter(selectedWish, 'wishText', 45);
+            } else {
+                // Các lần bấm sau -> Đổi lời chúc ngay lập tức không gõ lại
+                cursor.style.display = 'none';
+                wishTextElement.innerText = `"${selectedWish}"`;
+            }
 
             // Bắn pháo hoa
             confetti({
@@ -282,31 +285,31 @@
             }, 250);
         }
 
-        // Hiệu ứng hoa rơi nền
-        function createFallingItems() {
-            const items = ['🌸', '🌷', '💖', '💐', '✨', '🌹', '🌺', '⭐'];
+        // Hiệu ứng mưa rơi liên tục ở nền
+        function createRainEffect() {
+            const items = ['🌸', '🌷', '💖', '💐', '✨', '🌹', '🌺', '⭐', '❤️'];
             const container = document.body;
 
             setInterval(() => {
                 const item = document.createElement('div');
-                item.classList.add('falling-item');
+                item.classList.add('rain-item');
                 
                 item.innerText = items[Math.floor(Math.random() * items.length)];
                 item.style.left = Math.random() * 100 + 'vw';
                 
-                const duration = Math.random() * 4 + 4;
+                const duration = Math.random() * 3 + 2.5;
                 item.style.animationDuration = duration + 's';
-                item.style.fontSize = (Math.random() * 18 + 14) + 'px';
+                item.style.fontSize = (Math.random() * 16 + 12) + 'px';
 
                 container.appendChild(item);
 
                 setTimeout(() => {
                     item.remove();
                 }, duration * 1000);
-            }, 250);
+            }, 150);
         }
 
-        window.onload = createFallingItems;
+        window.onload = createRainEffect;
     </script>
 </body>
 </html>
