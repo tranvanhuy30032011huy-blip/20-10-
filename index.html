@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 - Trần Văn Huy</title>
-    <!-- Canvas-Confetti library cho hiệu ứng pháo hoa -->
+    <!-- Thư viện Canvas-Confetti cho hiệu ứng pháo hoa -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * {
@@ -32,7 +32,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Container viền phát sáng */
         .card-container {
             position: relative;
             z-index: 10;
@@ -57,7 +56,7 @@
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Biểu tượng trái tim nhịp đập */
+        /* Trái tim nhịp đập */
         .heart-icon {
             font-size: 3.5rem;
             display: inline-block;
@@ -87,7 +86,7 @@
             margin-bottom: 25px;
         }
 
-        /* Nút bấm với hiệu ứng Pulse */
+        /* Nút bấm */
         .btn {
             background: linear-gradient(45deg, #ff2a75, #ff6097);
             color: white;
@@ -99,8 +98,6 @@
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(255, 42, 117, 0.4);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .btn:hover {
@@ -108,11 +105,7 @@
             box-shadow: 0 12px 30px rgba(255, 42, 117, 0.6);
         }
 
-        .btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Khung lời chúc xuất hiện hiệu ứng 3D */
+        /* Khung chứa lời chúc */
         .wishes-card {
             display: none;
             margin-top: 25px;
@@ -122,28 +115,38 @@
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             animation: flipIn 0.7s ease forwards;
+            min-height: 80px;
         }
 
         @keyframes flipIn {
-            from {
-                opacity: 0;
-                transform: rotateX(-90deg);
-            }
-            to {
-                opacity: 1;
-                transform: rotateX(0deg);
-            }
+            from { opacity: 0; transform: rotateX(-90deg); }
+            to { opacity: 1; transform: rotateX(0deg); }
         }
 
+        /* Kiểu chữ gõ lời chúc & Con trỏ đánh máy */
         .wishes-card p {
             color: #c2185b;
             font-size: 1.1rem;
             font-style: italic;
             font-weight: 500;
             line-height: 1.6;
+            display: inline;
         }
 
-        /* Tên tác giả ở chân trang */
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            background-color: #c2185b;
+            margin-left: 4px;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Tác giả */
         .author-tag {
             margin-top: 30px;
             padding-top: 15px;
@@ -163,7 +166,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Hiệu ứng vật thể rơi (Hoa, tim, sao) */
+        /* Hoa rơi */
         .falling-item {
             position: absolute;
             top: -10%;
@@ -196,13 +199,12 @@
             <h1>Happy Women's Day 20/10 🌸</h1>
             <p class="sub-text">Chúc các bạn/chị/em một ngày 20/10 ngập tràn niềm vui, luôn xinh đẹp, tự tin và hạnh phúc bên những người thân yêu!</p>
             
-            <button class="btn" onclick="celebrate()">Mở Quà & Lời Chúc ✨</button>
+            <button class="btn" id="wishBtn" onclick="celebrate()">Mở Quà & Lời Chúc ✨</button>
 
             <div class="wishes-card" id="wishesCard">
-                <p id="wishText">"Chúc bạn luôn tỏa sáng rực rỡ như những bông hoa ngát hương!"</p>
+                <p id="wishText"></p><span class="cursor" id="cursor" style="display: none;">&nbsp;</span>
             </div>
 
-            <!-- Dòng chữ tác giả -->
             <div class="author-tag">
                 Created with ❤️ by <span class="author-name">Trần Văn Huy</span>
             </div>
@@ -210,7 +212,6 @@
     </div>
 
     <script>
-        // Danh sách lời chúc ngẫu nhiên
         const wishes = [
             "Chúc bạn luôn tỏa sáng như những bông hoa ngát hương, công việc thuận lợi và luôn nở nụ cười trên môi!",
             "Chúc bạn ngày 20/10 tràn ngập niềm vui, xinh đẹp hơn mỗi ngày và nhận được thật nhiều tình yêu thương!",
@@ -219,25 +220,52 @@
             "Chúc bạn luôn giữ vững sự trẻ trung, quyến rũ, luôn hạnh phúc và đạt được mọi ước mơ của mình!"
         ];
 
-        // Hàm xử lý sự kiện bấm nút
+        let isTyping = false;
+        let typingTimeout;
+
+        // Hàm tạo hiệu ứng gõ chữ
+        function typeWriter(text, elementId, speed = 50) {
+            const element = document.getElementById(elementId);
+            const cursor = document.getElementById('cursor');
+            element.innerText = '"';
+            cursor.style.display = 'inline-block';
+            let i = 0;
+
+            function type() {
+                if (i < text.length) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    typingTimeout = setTimeout(type, speed);
+                } else {
+                    element.innerText += '"';
+                    isTyping = false;
+                }
+            }
+            type();
+        }
+
+        // Hàm xử lý khi bấm nút
         function celebrate() {
-            // 1. Hiển thị lời chúc ngẫu nhiên
+            if (isTyping) return; // Tránh bấm liên tục khi đang gõ chữ
+
             const card = document.getElementById('wishesCard');
-            const text = document.getElementById('wishText');
-            
-            const randomIndex = Math.floor(Math.random() * wishes.length);
-            text.innerText = `"${wishes[randomIndex]}"`;
-            
             card.style.display = 'block';
 
-            // 2. Bắn pháo hoa (Confetti) xoè rực rỡ 2 bên
+            // Chọn ngẫu nhiên lời chúc
+            const randomIndex = Math.floor(Math.random() * wishes.length);
+            const selectedWish = wishes[randomIndex];
+
+            isTyping = true;
+            clearTimeout(typingTimeout);
+            typeWriter(selectedWish, 'wishText', 45);
+
+            // Bắn pháo hoa
             confetti({
                 particleCount: 80,
                 spread: 70,
                 origin: { y: 0.6 }
             });
 
-            // Bắn thêm đợt pháo hoa phụ ngẫu nhiên
             setTimeout(() => {
                 confetti({
                     particleCount: 50,
@@ -254,7 +282,7 @@
             }, 250);
         }
 
-        // Hiệu ứng hoa, trái tim, ngôi sao rơi liên tục ở nền
+        // Hiệu ứng hoa rơi nền
         function createFallingItems() {
             const items = ['🌸', '🌷', '💖', '💐', '✨', '🌹', '🌺', '⭐'];
             const container = document.body;
@@ -266,7 +294,7 @@
                 item.innerText = items[Math.floor(Math.random() * items.length)];
                 item.style.left = Math.random() * 100 + 'vw';
                 
-                const duration = Math.random() * 4 + 4; // Rơi trong 4-8s
+                const duration = Math.random() * 4 + 4;
                 item.style.animationDuration = duration + 's';
                 item.style.fontSize = (Math.random() * 18 + 14) + 'px';
 
@@ -278,7 +306,6 @@
             }, 250);
         }
 
-        // Tự động chạy hiệu ứng rơi khi vào trang
         window.onload = createFallingItems;
     </script>
 </body>
