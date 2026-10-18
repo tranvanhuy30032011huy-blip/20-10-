@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 - Trần Văn Huy</title>
+    <!-- Canvas-Confetti library cho hiệu ứng pháo hoa -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ff758c, #ff7eb3, #7f7fd5, #86a8e7);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container viền phát sáng */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 520px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.88);
+            padding: 40px 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 
+                        0 0 30px rgba(255, 105, 180, 0.5);
+            backdrop-filter: blur(15px);
+            text-align: center;
+            animation: popIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.6) translateY(50px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Biểu tượng trái tim nhịp đập */
+        .heart-icon {
+            font-size: 3.5rem;
+            display: inline-block;
+            animation: beat 1.2s ease infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 20, 147, 0.6));
+        }
+
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25) rotate(5deg); }
+        }
+
+        h1 {
+            color: #d81b60;
+            font-size: 2.1rem;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #d81b60, #ff4081);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-text {
+            color: #4a4a4a;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Nút bấm với hiệu ứng Pulse */
+        .btn {
+            background: linear-gradient(45deg, #ff2a75, #ff6097);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 42, 117, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 12px 30px rgba(255, 42, 117, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Khung lời chúc xuất hiện hiệu ứng 3D */
+        .wishes-card {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #fff0f5 100%);
+            border-left: 5px solid #ff2a75;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: flipIn 0.7s ease forwards;
+        }
+
+        @keyframes flipIn {
+            from {
+                opacity: 0;
+                transform: rotateX(-90deg);
+            }
+            to {
+                opacity: 1;
+                transform: rotateX(0deg);
+            }
+        }
+
+        .wishes-card p {
+            color: #c2185b;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Tên tác giả ở chân trang */
+        .author-tag {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(216, 27, 96, 0.3);
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .author-name {
+            color: #d81b60;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hiệu ứng vật thể rơi (Hoa, tim, sao) */
+        .falling-item {
+            position: absolute;
+            top: -10%;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear infinite;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) rotate(180deg) scale(1.2);
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div class="container">
+            <div class="heart-icon">💖</div>
+            <h1>Happy Women's Day 20/10 🌸</h1>
+            <p class="sub-text">Chúc các bạn/chị/em một ngày 20/10 ngập tràn niềm vui, luôn xinh đẹp, tự tin và hạnh phúc bên những người thân yêu!</p>
+            
+            <button class="btn" onclick="celebrate()">Mở Quà & Lời Chúc ✨</button>
+
+            <div class="wishes-card" id="wishesCard">
+                <p id="wishText">"Chúc bạn luôn tỏa sáng rực rỡ như những bông hoa ngát hương!"</p>
+            </div>
+
+            <!-- Dòng chữ tác giả -->
+            <div class="author-tag">
+                Created with ❤️ by <span class="author-name">Trần Văn Huy</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách lời chúc ngẫu nhiên
+        const wishes = [
+            "Chúc bạn luôn tỏa sáng như những bông hoa ngát hương, công việc thuận lợi và luôn nở nụ cười trên môi!",
+            "Chúc bạn ngày 20/10 tràn ngập niềm vui, xinh đẹp hơn mỗi ngày và nhận được thật nhiều tình yêu thương!",
+            "Mong rằng mỗi ngày trôi qua của bạn đều đầy ắp tiếng cười, hạnh phúc và gặt hái được nhiều thành công!",
+            "Cảm ơn vì đã luôn tuyệt vời và mang lại năng lượng tích cực cho mọi người xung quanh. Happy 20/10!",
+            "Chúc bạn luôn giữ vững sự trẻ trung, quyến rũ, luôn hạnh phúc và đạt được mọi ước mơ của mình!"
+        ];
+
+        // Hàm xử lý sự kiện bấm nút
+        function celebrate() {
+            // 1. Hiển thị lời chúc ngẫu nhiên
+            const card = document.getElementById('wishesCard');
+            const text = document.getElementById('wishText');
+            
+            const randomIndex = Math.floor(Math.random() * wishes.length);
+            text.innerText = `"${wishes[randomIndex]}"`;
+            
+            card.style.display = 'block';
+
+            // 2. Bắn pháo hoa (Confetti) xoè rực rỡ 2 bên
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Bắn thêm đợt pháo hoa phụ ngẫu nhiên
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 250);
+        }
+
+        // Hiệu ứng hoa, trái tim, ngôi sao rơi liên tục ở nền
+        function createFallingItems() {
+            const items = ['🌸', '🌷', '💖', '💐', '✨', '🌹', '🌺', '⭐'];
+            const container = document.body;
+
+            setInterval(() => {
+                const item = document.createElement('div');
+                item.classList.add('falling-item');
+                
+                item.innerText = items[Math.floor(Math.random() * items.length)];
+                item.style.left = Math.random() * 100 + 'vw';
+                
+                const duration = Math.random() * 4 + 4; // Rơi trong 4-8s
+                item.style.animationDuration = duration + 's';
+                item.style.fontSize = (Math.random() * 18 + 14) + 'px';
+
+                container.appendChild(item);
+
+                setTimeout(() => {
+                    item.remove();
+                }, duration * 1000);
+            }, 250);
+        }
+
+        // Tự động chạy hiệu ứng rơi khi vào trang
+        window.onload = createFallingItems;
+    </script>
+</body>
+</html>
